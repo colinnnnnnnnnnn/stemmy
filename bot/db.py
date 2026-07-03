@@ -41,6 +41,22 @@ def insert_job(
         raise DbError("Failed to insert job") from e
 
 
+def fetch_last_job() -> tuple[Any, ...] | None:
+    try:
+        return fetch_one(
+            """
+            SELECT id, telegram_chat_id, youtube_url, status, created_at
+            FROM jobs
+            ORDER BY created_at DESC, id DESC
+            LIMIT 1
+            """
+        )
+    except OperationalError as e:
+        raise DbError("Database is unavailable") from e
+    except PsycopgError as e:
+        raise DbError("Failed to fetch last job") from e
+
+
 """
 Primitive functions
 """
