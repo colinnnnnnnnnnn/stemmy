@@ -4,7 +4,7 @@ import uuid
 from dataclasses import dataclass
 from pathlib import Path
 
-from bot.db import insert_job
+from bot.db import fetch_last_job, insert_job, pool
 
 
 @dataclass
