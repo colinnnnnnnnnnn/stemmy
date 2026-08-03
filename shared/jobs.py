@@ -11,6 +11,7 @@ from shared.exceptions import (
     JobAlreadyExistsError,
     JobNotFoundError,
 )
+from shared.models import Job
 
 UPDATABLE_FIELDS = {
     "status",
@@ -68,7 +69,29 @@ def insert_job(
         raise DbError("Failed to insert job") from e
 
 
-def fetch_last_job() -> tuple[Any, ...] | None:
+def get_job(job_id: str) -> Job:
+    try:
+        row = fetch_one(
+            """
+            SELECT id, telegram_chat_id, youtube_url, status, progress,
+                   input_path, output_path, error, song_title, created_at, updated_at
+            FROM jobs
+            WHERE id = %s
+            """,
+            (job_id,),
+        )
+    except OperationalError as e:
+        raise DbError("Database is unavailable") from e
+    except PsycopgError as e:
+        raise DbError(f"Failed to fetch job {job_id}") from e
+
+    if row is None:
+        raise JobNotFoundError(f"Job {job_id} not found")
+
+    return Job(**row)
+
+
+def fetch_last_job() -> dict[str, Any] | None:
     try:
         return fetch_one(
             """
