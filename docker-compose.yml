@@ -20,11 +20,11 @@ services:
       - ./data/output:/data/output
       - ./data/done:/data/done
     depends_on:
-      - demucs
+      - worker
     restart: unless-stopped
 
-  demucs:
-    build: ./demucs
+  worker:
+    build: ./worker
     volumes:
       - ./data/input:/data/input
       - ./data/output:/data/output
