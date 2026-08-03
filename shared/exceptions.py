@@ -12,3 +12,11 @@ class InvalidJobUpdateError(DbError):
 
 class JobNotFoundError(DbError):
     pass
+
+
+class DownloadError(Exception):
+    pass
+
+
+class JobFailedError(Exception):
+    pass
