@@ -6,6 +6,7 @@ CREATE TABLE jobs (
   progress INTEGER NOT NULL DEFAULT 0 CHECK (progress BETWEEN 0 AND 100),
   input_path TEXT,
   output_path TEXT,
+  song_title TEXT,
   error TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
