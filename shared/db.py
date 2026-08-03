@@ -8,9 +8,8 @@ from psycopg import IntegrityError, OperationalError
 from psycopg.rows import dict_row
 from psycopg_pool import ConnectionPool
 
-DATABASE_URL = os.getenv(
-    "DATABASE_URL", "postgresql://bot:botpass@localhost:5432/jobdb"
-)
+from shared.config import DATABASE_URL
+
 pool = ConnectionPool(conninfo=DATABASE_URL, min_size=1, max_size=5)
 atexit.register(pool.close)
 
