@@ -1,8 +1,12 @@
+import logging
 import time
 
 from shared import jobs
 from shared.config import OUTPUT_DIR
 from worker.demucs_runner import split_stems
+
+logger = logging.getLogger(__name__)
+
 
 POLL_INTERVAL_SECONDS = 3
 MODEL = "htdemucs"
@@ -27,4 +31,5 @@ def _process_job(job) -> None:
         output_path = split_stems(job.input_path, str(OUTPUT_DIR), MODEL)
         jobs.mark_job_completed(job.id, str(output_path))
     except Exception as e:
+        logger.exception("Job %s failed", job.id)
         jobs.mark_job_failed(job.id, str(e))

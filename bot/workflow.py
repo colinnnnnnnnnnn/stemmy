@@ -1,13 +1,13 @@
 import asyncio
-
-# import logging
+import logging
 from pathlib import Path
 
 from bot.downloader import download_audio
 from shared import jobs
+from shared.config import INPUT_DIR
 from shared.exceptions import DownloadError, JobFailedError
 
-# logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 POLL_INTERVAL_SECONDS = 2
 
@@ -19,6 +19,7 @@ async def process_youtube_url(chat_id: int, url: str) -> Path:
         jobs.mark_job_downloading(job_id)
         input_path = await _download_to_input_dir(url)
     except Exception as e:
+        logger.exception("Failed to download for job %s", job_id)
         jobs.mark_job_failed(job_id, error=str(e))
         raise DownloadError(f"Failed to download for job {job_id}") from e
 
