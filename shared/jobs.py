@@ -129,6 +129,41 @@ def update_job_song_title(job_id: str, song_title: str) -> None:
     update_job(job_id, song_title=song_title)
 
 
+def claim_next_queued_job() -> Job | None:
+    try:
+        row = fetch_one(
+            """
+            SELECT id, telegram_chat_id, youtube_url, status, progress,
+                   input_path, output_path, error, song_title, created_at, updated_at
+            FROM jobs
+            WHERE status = %s
+            ORDER BY created_at, id
+            LIMIT 1
+            """,
+            ("queued",),
+        )
+    except OperationalError as e:
+        raise DbError("Database is unavailable") from e
+    except PsycopgError as e:
+        raise DbError("Failed to fetch next queued job") from e
+
+    if row is None:
+        return None
+
+    job = Job(**row)
+    mark_job_splitting(job.id)
+
+    return job
+
+
+def mark_job_splitting(job_id: str) -> None:
+    update_job(job_id, status="splitting")
+
+
+def mark_job_completed(job_id: str, output_path: str) -> None:
+    update_job(job_id, status="completed", output_path=output_path)
+
+
 if __name__ == "__main__":
     try:
         url = "https://www.youtube.com/watch?v=qlhahaRSBzw"
