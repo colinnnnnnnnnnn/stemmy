@@ -2,6 +2,7 @@ import logging
 import os
 
 from dotenv import load_dotenv
+from download_mp3 import download_mp3
 from telegram import ForceReply, Update
 from telegram.ext import (
     Application,
@@ -10,8 +11,6 @@ from telegram.ext import (
     MessageHandler,
     filters,
 )
-
-from download_mp3 import download_mp3
 
 load_dotenv()
 
