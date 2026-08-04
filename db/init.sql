@@ -2,7 +2,7 @@ CREATE TABLE jobs (
   id UUID PRIMARY KEY,
   telegram_chat_id BIGINT NOT NULL,
   youtube_url TEXT NOT NULL,
-  status TEXT NOT NULL, -- queued, downloading, splitting, done, failed
+  status TEXT NOT NULL, -- queued, downloading, splitting, completed, failed
   progress INTEGER NOT NULL DEFAULT 0 CHECK (progress BETWEEN 0 AND 100),
   input_path TEXT,
   output_path TEXT,
