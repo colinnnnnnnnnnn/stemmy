@@ -15,11 +15,10 @@ RUN uv venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 # Install Python dependencies
-COPY requirements.txt .
-RUN uv pip install --no-cache-dir -r requirements.txt
+COPY worker/requirements.txt worker/requirements.txt
+RUN uv pip install --no-cache-dir -r worker/requirements.txt
 
-# Copy script
-COPY demucs-watch.sh /demucs-watch.sh
-RUN chmod +x /demucs-watch.sh
+COPY shared/ shared/
+COPY worker/ worker/
 
 ENTRYPOINT ["/bin/sh", "/demucs-watch.sh"]

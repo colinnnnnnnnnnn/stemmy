@@ -7,9 +7,10 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY bot/requirements.txt bot/requirements.txt
+RUN pip install --no-cache-dir -r bot/requirements.txt
 
-COPY . .
+COPY shared/ shared/
+COPY bot/ bot/
 
 CMD ["python", "main.py"]
