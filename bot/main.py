@@ -1,8 +1,6 @@
 import logging
 import os
 
-from dotenv import load_dotenv
-from download_mp3 import download_mp3
 from telegram import ForceReply, Update
 from telegram.ext import (
     Application,
@@ -12,7 +10,7 @@ from telegram.ext import (
     filters,
 )
 
-load_dotenv()
+from bot.handlers import split_and_send
 
 # Enable logging
 logging.basicConfig(
@@ -45,15 +43,15 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 #     await update.message.reply_text(update.message.text)
 
 
-async def convert_and_send(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    msg = update.message
-    if not msg or not msg.text:
-        return
-    await msg.chat.send_message("Downloading...")
-    path, jobid = download_mp3(msg.text)
-    await msg.chat.send_message("Sending mp3...")
-    with open(path, "rb") as file:
-        await msg.reply_audio(file)
+# async def convert_and_send(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+#     msg = update.message
+#     if not msg or not msg.text:
+#         return
+#     await msg.chat.send_message("Downloading...")
+#     path, jobid = download_mp3(msg.text)
+#     await msg.chat.send_message("Sending mp3...")
+#     with open(path, "rb") as file:
+#         await msg.reply_audio(file)
 
 
 def main() -> None:
@@ -68,9 +66,8 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
 
-    # on non command i.e message - echo the message on Telegram
     application.add_handler(
-        MessageHandler(filters.TEXT & ~filters.COMMAND, convert_and_send)
+        MessageHandler(filters.TEXT & ~filters.COMMAND, split_and_send)
     )
 
     # Run the bot until the user presses Ctrl-C
