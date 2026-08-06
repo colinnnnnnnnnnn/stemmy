@@ -25,6 +25,7 @@ services:
       - ./data/input:/data/input
       - ./data/output:/data/output
     depends_on:
+      - postgres
       - worker
     restart: unless-stopped
 
@@ -39,6 +40,8 @@ services:
     volumes:
       - ./data/input:/data/input
       - ./data/output:/data/output
+    depends_on:
+      - postgres
     restart: unless-stopped
 
 volumes:
