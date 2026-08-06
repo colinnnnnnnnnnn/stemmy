@@ -1,3 +1,5 @@
 demucs
 torchcodec
 psycopg[binary,pool]>=3.3.4
+python-dotenv>=1.2.2
+numpy<2
