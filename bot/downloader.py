@@ -3,7 +3,10 @@ import subprocess
 from pathlib import Path
 
 
-def download_audio(url: str, download_path: str) -> Path:
+def download_audio(url: str, input_dir: str, job_id: str) -> Path:
+    job_dir = Path(input_dir) / job_id
+    job_dir.mkdir(parents=True, exist_ok=True)
+
     try:
         res = subprocess.run(
             [
@@ -14,7 +17,7 @@ def download_audio(url: str, download_path: str) -> Path:
                 "--print",
                 "after_move:filepath",
                 "-o",
-                os.path.join(download_path, "%(title)s.%(ext)s"),
+                os.path.join(job_dir, "%(title)s.%(ext)s"),
                 url,
             ],
             capture_output=True,

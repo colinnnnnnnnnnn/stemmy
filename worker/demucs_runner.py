@@ -2,14 +2,17 @@ import subprocess
 from pathlib import Path
 
 
-def split_stems(input_path: str, output_dir: str, model: str) -> Path:
+def split_stems(input_path: str, output_dir: str, model: str, job_id: str) -> Path:
     try:
+        print("TESTTT")
         res = subprocess.run(  # res to be used later for capturing progress
             [
                 "demucs",
                 "-n",
                 model,
                 "--mp3",
+                "--filename",
+                f"{job_id}/{{stem}}.{{ext}}",
                 "-o",
                 output_dir,
                 input_path,
@@ -22,8 +25,7 @@ def split_stems(input_path: str, output_dir: str, model: str) -> Path:
         raise RuntimeError(f"demucs failed: {e.stderr}")
 
     # Precompute output path deterministically (demucs has no flag to print output path)
-    track_name = Path(input_path).stem
-    output_path = Path(output_dir) / model / track_name
+    output_path = Path(output_dir) / model / str(job_id)
 
     if not output_path.exists():
         raise RuntimeError(
