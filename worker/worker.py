@@ -15,6 +15,7 @@ MODEL = "htdemucs"
 def run() -> None:
     while True:
         job = _wait_for_next_job()
+        logger.info("Job %s: splitting stems", job.id)
         _process_job(job)
 
 
@@ -28,8 +29,9 @@ def _wait_for_next_job():
 
 def _process_job(job) -> None:
     try:
-        output_path = split_stems(job.input_path, str(OUTPUT_DIR), MODEL)
+        output_path = split_stems(job.input_path, str(OUTPUT_DIR), MODEL, job.id)
         jobs.mark_job_completed(job.id, str(output_path))
+        logger.info("Job %s: completed. Output: %s", job.id, str(output_path))
     except Exception as e:
         logger.exception("Job %s failed", job.id)
         jobs.mark_job_failed(job.id, str(e))
