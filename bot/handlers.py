@@ -24,5 +24,4 @@ async def split_and_send(update: Update, context: ContextTypes):
             await msg.chat.send_audio(
                 audio_file,
                 filename=stem_path.name,
-                caption=stem_path.stem,
             )
