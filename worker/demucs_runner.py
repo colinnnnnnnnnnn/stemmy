@@ -4,7 +4,6 @@ from pathlib import Path
 
 def split_stems(input_path: str, output_dir: str, model: str, job_id: str) -> Path:
     try:
-        print("TESTTT")
         res = subprocess.run(  # res to be used later for capturing progress
             [
                 "demucs",
