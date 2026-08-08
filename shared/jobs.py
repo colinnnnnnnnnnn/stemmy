@@ -3,6 +3,7 @@ from typing import Any, LiteralString, cast
 
 from psycopg import Error as PsycopgError
 from psycopg import IntegrityError, OperationalError
+from psycopg.rows import dict_row
 
 from shared.db import execute, fetch_one, pool
 from shared.exceptions import (
@@ -127,29 +128,35 @@ def update_job_song_title(job_id: str, song_title: str) -> None:
 
 def claim_next_queued_job() -> Job | None:
     try:
-        row = fetch_one(
-            """
-            SELECT id, telegram_chat_id, youtube_url, status, progress,
-                   input_path, output_path, error, song_title, created_at, updated_at
-            FROM jobs
-            WHERE status = %s
-            ORDER BY created_at, id
-            LIMIT 1
-            """,
-            ("queued",),
-        )
+        with pool.connection() as conn, conn.cursor(row_factory=dict_row) as cur:
+            cur.execute(
+                """
+                UPDATE jobs
+                SET status = %s, updated_at = now()
+                WHERE id = (
+                    SELECT id
+                    FROM jobs
+                    WHERE status = %s
+                    ORDER BY created_at, id
+                    FOR UPDATE SKIP LOCKED
+                    LIMIT 1
+                )
+                RETURNING id, telegram_chat_id, youtube_url, status, progress,
+                          input_path, output_path, error, song_title, created_at, updated_at
+                """,
+                ("splitting", "queued"),
+            )
+            row = cur.fetchone()
+            conn.commit()
     except OperationalError as e:
         raise DbError("Database is unavailable") from e
     except PsycopgError as e:
-        raise DbError("Failed to fetch next queued job") from e
+        raise DbError("Failed to claim next queued job") from e
 
     if row is None:
         return None
 
-    job = Job(**row)
-    mark_job_splitting(job.id)
-
-    return job
+    return Job(**row)
 
 
 def mark_job_splitting(job_id: str) -> None:
@@ -158,12 +165,3 @@ def mark_job_splitting(job_id: str) -> None:
 
 def mark_job_completed(job_id: str, output_path: str) -> None:
     update_job(job_id, status="completed", output_path=output_path)
-
-
-if __name__ == "__main__":
-    try:
-        url = "https://www.youtube.com/watch?v=qlhahaRSBzw"
-        create_job_from_url(123456789, url)
-        print(fetch_last_job())
-    finally:
-        pool.close()
