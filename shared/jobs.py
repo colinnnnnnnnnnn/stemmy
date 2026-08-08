@@ -51,7 +51,7 @@ def update_job(job_id: str, **fields: Any) -> None:
 
 
 def insert_job(
-    job_id: str, telegram_chat_id: int, youtube_url: str, status: str = "queued"
+    job_id: str, telegram_chat_id: int, youtube_url: str, status: str = "downloading"
 ) -> None:
     try:
         execute(
@@ -111,10 +111,6 @@ def create_job_from_url(telegram_chat_id: int, url: str) -> str:
     job_id = uuid.uuid4().hex
     insert_job(job_id, telegram_chat_id, url)
     return job_id
-
-
-def mark_job_downloading(job_id: str) -> None:
-    update_job(job_id, status="downloading")
 
 
 def mark_job_failed(job_id: str, error: str) -> None:

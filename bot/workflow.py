@@ -17,7 +17,6 @@ async def process_youtube_url(chat_id: int, url: str) -> Path:
     logger.info("Job %s: created for chat %s", job_id, chat_id)
 
     try:
-        jobs.mark_job_downloading(job_id)
         logger.info("Job %s: downloading from URL %s", job_id, url)
         input_path = await _download_to_input_dir(url, job_id)
         logger.info("Job %s: download success", job_id)
