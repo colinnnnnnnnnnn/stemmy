@@ -75,18 +75,23 @@ downloading → queued → splitting → completed
 ## Design Highlights
 
 **PostgreSQL-backed job queue**
+
 Jobs are persisted in PostgreSQL rather than relying on filesystem or in-memory state. This gives the application persistent job state and allows the bot and worker to coordinate through a shared source of truth.
 
 **Separate bot and worker services**
+
 The Telegram bot is responsible for user interaction and downloading, while a dedicated worker performs the CPU-intensive Demucs processing. This keeps long-running processing separate from the user-facing service.
 
 **Atomic job claiming**
+
 Workers claim queued jobs through an atomic database update, preventing multiple workers from processing the same job simultaneously.
 
 **Subprocess-based processing**
+
 yt-dlp and Demucs are invoked as external processes rather than being tightly coupled to the application logic. This keeps the audio-processing tools isolated and simplifies dependency management.
 
 **Containerized deployment**
+
 The bot, worker, and PostgreSQL database run as separate Docker services managed through Docker Compose, allowing the complete application to be deployed consistently on a self-hosted server.
 
 ## Running Locally
