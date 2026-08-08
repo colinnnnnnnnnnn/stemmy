@@ -1,7 +1,7 @@
 [project]
-name = "stem-splitter-telegram-bot"
+name = "stemmy"
 version = "0.1.0"
-description = "Add your description here"
+description = "Audio processing and stem separation pipeline with Telegram bot interface"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
