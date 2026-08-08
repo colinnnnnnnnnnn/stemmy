@@ -39,7 +39,7 @@ async def process_youtube_url(chat_id: int, url: str) -> Path:
     if job.output_path is None:
         raise JobFailedError(f"Job {job_id} completed but has no output path")
 
-    logger.info("Job %s: successfully processed")
+    logger.info("Job %s: successfully processed", job_id)
     return Path(job.output_path)
 
 

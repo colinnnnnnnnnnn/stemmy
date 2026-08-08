@@ -7,7 +7,7 @@ from shared.exceptions import DownloadError, JobFailedError
 
 async def split_and_send(update: Update, context: ContextTypes):
     msg = update.message
-    await msg.chat.send_message("Downloading...")
+    await msg.chat.send_message("Processing...")
     try:
         output_dir = await process_youtube_url(msg.chat_id, msg.text)
     except DownloadError as e:
